@@ -17,6 +17,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->bigInteger('idRole')->unsigned()->default(1);
+            $table->string('Rut')->nullable();
+            $table->string('Telefono')->nullable();
+            $table->string('Direccion')->nullable();
+            $table->string('Estado')->nullable();
+            $table->string('Cargo')->nullable();
+            $table->boolean('Activo')->default(1);
+
             $table->rememberToken();
             $table->timestamps();
         });
