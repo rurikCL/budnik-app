@@ -35,6 +35,14 @@ class orden_compra extends Model
     }
 
     public function aprobaciones(){
-        return $this->hasMany(aprobaciones_solicitud::class,'IDSolicitud','id');
+        return $this->hasMany(aprobaciones_solicitud::class,'IDSolicitud','IDSolicitudCompra');
+    }
+
+    public function articulos(){
+        return $this->hasMany(detalle_solicitud::class,'IDSolicitud','id');
+    }
+
+    public function documentos(){
+        return $this->hasMany(documentos_solicitud::class,'IDSolicitud','IDSolicitudCompra');
     }
 }

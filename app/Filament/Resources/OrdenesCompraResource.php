@@ -11,10 +11,12 @@ use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -39,38 +41,36 @@ class OrdenesCompraResource extends Resource
                     Forms\Components\DatePicker::make('FechaSolicitud'),
 
                     TextInput::make('Descripcion'),
-                    Select::make('Estado')->options([
-                        0 => 'Pendiente',
-                        1 => 'Aprobado',
-                        2 => 'Rechazado',
-                    ])->default(0),
 
-                    Select::make('IDSolicitudCompra')->options(solicitudes_compra::all()->pluck('Descripcion', 'id')->toArray()),
-
-//                    TextInput::make('Comentario'),
                     Select::make('IDSolicitante')
-                        ->relationship('solicitante', 'name')
+                        ->relationship('solicitante', 'name'),
+
+                    Select::make('IDSolicitudCompra')
+                        ->label('Solicitud de Compra')
+                        ->options(solicitudes_compra::all()->pluck('Descripcion', 'id')->toArray()),
+
+                    Forms\Components\ToggleButtons::make('Estado')
+                        ->options([
+                            '2' => 'Rechazado',
+                            '0' => 'Pendiente',
+                            '1' => 'Aprobado',
+                        ])
+                        ->colors([
+                            '2' => 'danger',
+                            '0' => 'info',
+                            '1' => 'success',
+                        ])
+                        ->icons([
+                            '2' => 'heroicon-o-x-mark',
+                            '0' => 'heroicon-o-clock',
+                            '1' => 'heroicon-o-check-circle',
+                        ])
+                        ->default(1)
+                        ->inline()
+                        ->grouped(),
                 ])->columns(),
 
-                Forms\Components\Section::make([
-                    Forms\Components\Textarea::make('Comentario'),
-                    Forms\Components\Actions::make([
-                        Forms\Components\Actions\Action::make('Aprobar')
-                            ->button()
-                            ->color('success')
-                            ->requiresConfirmation()
-                            ->modalHeading('Aprobar Solicitud')
-                            ->modalDescription('Esta seguro que desea aprobar esta solicitud?'),
-                        Forms\Components\Actions\Action::make('Rechazar')
-                            ->button()
-                            ->color('danger')
-                            ->requiresConfirmation()
-                            ->modalHeading('Rechazar Solicitud')
-                            ->modalDescription('Esta seguro que desea rechazar esta solicitud?'),
-                    ])->grow(false)
-                        ->alignRight(),
-
-                ])]);
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -85,7 +85,10 @@ class OrdenesCompraResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('EstadoNombre')
-                    ->label('Estado'),
+                    ->label('Estado')
+                    ->badge()
+                    ->color(fn($state) => $state == 'Pendiente' ? 'info' : ($state == 'Aprobado' ? 'success' : 'danger'))
+                    ->icon(fn($state) => $state == 'Aprobado' ? 'heroicon-s-check' : 'heroicon-o-clock'),
 
                 TextColumn::make('solicitante.name')
                     ->label('Solicitante'),
@@ -100,9 +103,19 @@ class OrdenesCompraResource extends Resource
                     ->money('CLP')
             ])
             ->filters([
-                //
+                SelectFilter::make('Estado')->options([
+                    0 => 'Pendiente',
+                    1 => 'Aprobado',
+                    2 => 'Rechazado',
+                ]),
+                SelectFilter::make('IDSolicitante')
+//                    ->relationship('solicitante', 'name')
+                    ->options(fn() => solicitudes_compra::all()
+                        ->pluck('solicitante.name', 'solicitante.id'))
+                    ->label('Solicitante'),
             ])
             ->actions([
+//                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
@@ -115,7 +128,12 @@ class OrdenesCompraResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AprobacionesRelationManager::class,
+//            RelationGroup::make('Detalles', [
+                RelationManagers\ArticulosRelationManager::class,
+                RelationManagers\DocumentosRelationManager::class,
+
+//            ]),
         ];
     }
 
@@ -123,6 +141,7 @@ class OrdenesCompraResource extends Resource
     {
         return [
             'index' => Pages\ListOrdenesCompras::route('/'),
+            'view' => Pages\ViewOrdenesCompra::route('/{record}/view'),
             'create' => Pages\CreateOrdenesCompra::route('/create'),
             'edit' => Pages\EditOrdenesCompra::route('/{record}/edit'),
         ];

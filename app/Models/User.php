@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,6 +31,7 @@ class User extends Authenticatable
         'Estado',
         'Cargo',
         'Activo',
+        'Foto',
     ];
 
     /**
@@ -65,6 +67,14 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    protected function EstadoNombre(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => ($attributes['Estado'] == 0) ? 'Inactivo' : (($attributes['Estado'] == 1) ? 'Activo' : 'Vacaciones'),
+//            set: fn (string $value) => strtolower($value),
+        );
     }
 
     public function canAccessPanel(Panel $admin): bool

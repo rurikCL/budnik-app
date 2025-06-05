@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\SolicitudesCompraResource\RelationManagers;
+namespace App\Filament\Resources\OrdenesCompraResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -36,10 +36,10 @@ class ArticulosRelationManager extends RelationManager
                 TextInput::make('Descripcion'),
                 Select::make('DescUnidad')
                     ->label('U/M')
-                    ->options([
-                        'MT2' => 'MT2',
-                        'Unidad' => 'Unidad',
-                    ]),
+                ->options([
+                    'MT2' => 'MT2',
+                    'Unidad' => 'Unidad',
+                ]),
 
                 Forms\Components\Fieldset::make()
                     ->schema([

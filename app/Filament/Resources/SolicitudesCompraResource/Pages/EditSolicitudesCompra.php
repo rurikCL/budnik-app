@@ -11,11 +11,18 @@ class EditSolicitudesCompra extends EditRecord
 {
     protected static string $resource = SolicitudesCompraResource::class;
 
+    public function getFormActions(): array
+    {
+        return [];
+    }
 
     protected function getHeaderActions(): array
     {
         return [
-//            Actions\DeleteAction::make(),
+            $this->getSaveFormAction()
+                ->submit(null)
+                ->action(fn() => $this->save()),
+            $this->getCancelFormAction(),
         ];
     }
 }

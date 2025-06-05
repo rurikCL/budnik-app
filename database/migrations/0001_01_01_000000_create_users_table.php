@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('Direccion')->nullable();
             $table->string('Estado')->nullable();
             $table->string('Cargo')->nullable();
+            $table->string('Foto')->nullable();
             $table->boolean('Activo')->default(1);
 
             $table->rememberToken();

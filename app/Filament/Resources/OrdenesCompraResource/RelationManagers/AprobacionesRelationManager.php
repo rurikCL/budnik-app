@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\SolicitudesCompraResource\RelationManagers;
+namespace App\Filament\Resources\OrdenesCompraResource\RelationManagers;
 
 use Faker\Provider\Text;
 use Filament\Actions\Action;
