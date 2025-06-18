@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SolicitudesCompraResource\Pages;
 use App\Filament\Resources\SolicitudesCompraResource\RelationManagers;
 use App\Models\solicitudes_compra;
+use App\Models\SolicitudPop;
+use App\Models\SolicitudPopHeader;
 use Faker\Provider\Text;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SolicitudesCompraResource extends Resource
 {
-    protected static ?string $model = solicitudes_compra::class;
+    protected static ?string $model = SolicitudPopHeader::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-rectangle-stack';
     protected static ?string $navigationLabel = 'Solicitudes de Compra';
@@ -129,12 +131,33 @@ class SolicitudesCompraResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function ($query) {
+                $query->where('USERDEF1', '')
+                ->limit(500)
+                ->orderByDesc('REQDATE');
+            })
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+/*                Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->searchable(),*/
+                TextColumn::make('POPRequisitionNumber')
+                ->label('Numero de Solicitud')
+                ->sortable()
+                ->searchable(),
 
-                TextColumn::make('Descripcion')
+                TextColumn::make('RequisitionDescription')
+                ->label('Descripcion'),
+
+                TextColumn::make('REQDATE')
+                ->label('Fecha')
+                ->sortable()
+                ->date("d/m/Y"),
+
+                TextColumn::make('REQSTDBY')
+                ->label('Solicitante')
+                ->sortable(),
+
+                /*TextColumn::make('Descripcion')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('EstadoNombre')
@@ -153,10 +176,10 @@ class SolicitudesCompraResource extends Resource
 
                 TextColumn::make('Presupuesto')
                     ->default(11000000)
-                    ->money('CLP')
+                    ->money('CLP')*/
             ])
             ->filters([
-                SelectFilter::make('Estado')->options([
+                /*SelectFilter::make('Estado')->options([
                     0 => 'Pendiente',
                     1 => 'Aprobado',
                     2 => 'Rechazado',
@@ -165,7 +188,7 @@ class SolicitudesCompraResource extends Resource
 //                    ->relationship('solicitante', 'name')
                     ->options(fn() => solicitudes_compra::all()
                         ->pluck('solicitante.name', 'solicitante.id'))
-                    ->label('Solicitante'),
+                    ->label('Solicitante'),*/
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

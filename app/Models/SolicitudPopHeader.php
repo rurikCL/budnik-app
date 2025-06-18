@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SolicitudPopHeader extends Model
 {
-    protected $table = 'dbo.POP10200';
+    protected $table = 'POP10200';
     protected $primaryKey = 'POPRequisitionNumber';
+    protected $connection = 'budnik';
 
     protected $fillable = [
         'POPRequisitionNumber',

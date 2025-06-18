@@ -9,6 +9,7 @@ class SolicitudPop extends Model
 
     protected $table = 'dbo.POP10210';
     protected $primaryKey = 'POPRequisitionNumber';
+    protected $connection = 'budnik';
 
     protected $fillable = [
         'POPRequisitionNumber',
