@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('aprobaciones_solicitud', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('IDSolicitud')->unsigned();
+//            $table->bigInteger('IDSolicitud')->unsigned();
+            $table->string('IDExterno', 50)->nullable();
             $table->bigInteger('IDAprobador')->unsigned();
             $table->integer('Nivel');
             $table->string('Estado')->default(0); // 0:Pendiente, 1:Aprobado, 3:Rechazado

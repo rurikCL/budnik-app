@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SolicitudesCompraResource\Pages;
 use App\Filament\Resources\SolicitudesCompraResource\RelationManagers;
+use App\Models\aprobaciones_solicitud;
 use App\Models\solicitudes_compra;
 use App\Models\SolicitudPop;
 use App\Models\SolicitudPopHeader;
@@ -39,20 +40,31 @@ class SolicitudesCompraResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make([
-                    TextInput::make('id')
+                    TextInput::make('POPRequisitionNumber')
                         ->label('Numero de Solicitud')
                         ->readOnly(),
-                    Forms\Components\DatePicker::make('FechaSolicitud'),
+                    Forms\Components\DatePicker::make('REQDATE')
+                        ->label('Fecha solicitud'),
 
-                    TextInput::make('Descripcion'),
+                    TextInput::make('RequisitionDescription')
+                        ->label('Descripcion'),
 
-                    Select::make('IDSolicitante')
-                        ->relationship('solicitante', 'name'),
+                    TextInput::make('REQSTDBY')
+                        ->label('Solicitado por')
+                        ->readOnly(),
+
+//                    Select::make('IDSolicitante')
+//                        ->relationship('solicitante', 'name'),
 
 //                    TextInput::make('Comentario'),
-                    TextInput::make('LugarDespacho'),
+                    TextInput::make('ADDRESS1')
+                        ->label('Direccion despacho'),
 
-                    Forms\Components\ToggleButtons::make('Estado')
+                    TextInput::make('ADDRESS2')
+                        ->label('Comuna despacho'),
+
+                    Forms\Components\ToggleButtons::make('RequisitionStatus')
+                        ->label('Estado')
                         ->options([
                             '2' => 'Rechazado',
                             '0' => 'Pendiente',
@@ -133,50 +145,47 @@ class SolicitudesCompraResource extends Resource
         return $table
             ->modifyQueryUsing(function ($query) {
                 $query->where('USERDEF1', '')
-                ->limit(500)
-                ->orderByDesc('REQDATE');
+                    ->limit(500)
+                    ->orderByDesc('REQDATE');
             })
             ->columns([
-/*                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->searchable(),*/
+
+                Tables\Columns\TextColumn::make('Nuevo')
+                    ->default(function ($record) {
+                        if (aprobaciones_solicitud::where('IDExterno', $record->POPRequisitionNumber)->count()) {
+                            return "REVISADO";
+                        } else {
+                            return "NUEVO";
+                        }
+                    })
+                ->badge(),
+
                 TextColumn::make('POPRequisitionNumber')
-                ->label('Numero de Solicitud')
-                ->sortable()
-                ->searchable(),
-
-                TextColumn::make('RequisitionDescription')
-                ->label('Descripcion'),
-
-                TextColumn::make('REQDATE')
-                ->label('Fecha')
-                ->sortable()
-                ->date("d/m/Y"),
-
-                TextColumn::make('REQSTDBY')
-                ->label('Solicitante')
-                ->sortable(),
-
-                /*TextColumn::make('Descripcion')
+                    ->label('Numero de Solicitud')
+                    ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('EstadoNombre')
+                TextColumn::make('RequisitionDescription')
+                    ->label('Descripcion'),
+
+                TextColumn::make('REQDATE')
+                    ->label('Fecha')
+                    ->sortable()
+                    ->date("d/m/Y"),
+
+                TextColumn::make('REQSTDBY')
+                    ->label('Solicitante')
+                    ->sortable(),
+
+                TextColumn::make('DOCAMNT')
+                    ->label('Monto')
+                    ->numeric(0, ',', '.'),
+
+                TextColumn::make('RequisitionStatus')
                     ->label('Estado')
-                    ->badge()
-                    ->color(fn($state) => $state == 'Pendiente' ? 'info' : ($state == 'Aprobado' ? 'success' : 'danger'))
-                    ->icon(fn($state) => $state == 'Aprobado' ? 'heroicon-s-check' : 'heroicon-o-clock'),
+                    ->sortable(),
+//                ->state(fn($state) => ($state ==1) ? "Pendiente" :  "Aprobado"),
 
-                TextColumn::make('solicitante.name')
-                    ->label('Solicitante'),
-
-                TextColumn::make('SumMonto')
-                    ->label('Monto Total')
-                    ->default(fn($record) => $record->articulos->sum('CostoTotal'))
-                    ->money('CLP'),
-
-                TextColumn::make('Presupuesto')
-                    ->default(11000000)
-                    ->money('CLP')*/
             ])
             ->filters([
                 /*SelectFilter::make('Estado')->options([
@@ -206,7 +215,6 @@ class SolicitudesCompraResource extends Resource
         return [
             RelationGroup::make('Relaciones', [
                 RelationManagers\AprobacionesRelationManager::class,
-
                 RelationManagers\ArticulosRelationManager::class,
             ]),
 

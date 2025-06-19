@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('Comentario')->nullable();
             $table->string('LugarDespacho')->nullable();
             $table->bigInteger('IDProveedor')->unsigned();
+            $table->string('IDExterno',50)->nullable();
 
             $table->date('FechaSolicitud')->nullable();
             $table->timestamps();

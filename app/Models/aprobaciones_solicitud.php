@@ -9,6 +9,7 @@ class aprobaciones_solicitud extends Model
 {
     protected $table = 'aprobaciones_solicitud';
     protected $primaryKey = 'id';
+    protected $connection = 'mysql';
 
     protected $fillable = [
         'IDSolicitud',
@@ -16,6 +17,7 @@ class aprobaciones_solicitud extends Model
         'Nivel',
         'Estado',
         'FechaAprobacion',
+        'IDExterno',
     ];
 
 

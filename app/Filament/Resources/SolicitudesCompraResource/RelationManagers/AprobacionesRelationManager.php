@@ -21,6 +21,8 @@ class AprobacionesRelationManager extends RelationManager
     protected static ?string $modelLabel = 'Aprobacion';
     protected static ?string $pluralLabel = 'Aprobaciones';
 
+    protected $listeners = ['refreshRelation' => 'refresh'];
+
 
     public function form(Form $form): Form
     {

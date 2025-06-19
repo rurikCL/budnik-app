@@ -9,13 +9,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Pages\ContentTabPosition;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ArticulosRelationManager extends RelationManager
 {
-    protected static string $relationship = 'articulos';
+    protected static string $relationship = 'detalle';
     protected static ?string $modelLabel = 'Articulo';
     protected static ?string $pluralLabel = 'Articulos';
 
@@ -90,7 +91,27 @@ class ArticulosRelationManager extends RelationManager
             ->recordTitleAttribute('Articulos')
             ->description('Linea de artículos por orden de inserción')
             ->columns([
-                Tables\Columns\TextColumn::make('Descripcion'),
+                Tables\Columns\TextColumn::make('LineNumber')
+                ->label('Linea')
+                ->grow(false),
+
+                Tables\Columns\TextColumn::make('ITEMNMBR')
+                ->label('Item'),
+
+                Tables\Columns\TextColumn::make('ITEMDESC')
+                ->label('Desc'),
+
+                TextColumn::make('QTYORDER')
+                    ->label('Cantidad'),
+
+                TextColumn::make('UOFM')
+                ->label('Tipo unidad'),
+
+                TextColumn::make('QTYUNCMTBASE'),
+                TextColumn::make('UNITCOST'),
+
+
+                /*
                 Tables\Columns\TextColumn::make('DescUnidad')
                     ->label('U/M'),
                 Tables\Columns\TextColumn::make('Cantidad')
@@ -128,7 +149,7 @@ class ArticulosRelationManager extends RelationManager
                     ->label('Sub centro')
                     ->options([
                         1201, 1202
-                    ])->grow(false),
+                    ])->grow(false),*/
 
             ])
             ->filters([
@@ -148,6 +169,7 @@ class ArticulosRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
 //                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('LineNumber',  'asc');
     }
 }
