@@ -58,7 +58,7 @@ class ViewSolicitudesCompra extends ViewRecord
                 ->requiresConfirmation()
                 ->modalHeading('Rechazar Solicitud')
                 ->modalDescription('Esta seguro que desea rechazar esta solicitud?')
-                ->action(function ($record) {
+                ->action(function ($record, $livewire) {
                     $aprobacion = aprobaciones_solicitud::where('IDExterno', $record['POPRequisitionNumber'])
                         ->where('IDAprobador', Auth::user()->id)->first();
 
@@ -70,6 +70,8 @@ class ViewSolicitudesCompra extends ViewRecord
                             //TODO: codigo de actualizacion de solicitud, y creacion de orden de compra
                             //
                         }
+                        $livewire->dispatch('refreshRelation');
+
                     }
                 }),
         ];
