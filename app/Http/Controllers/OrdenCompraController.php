@@ -32,10 +32,10 @@ class OrdenCompraController extends Controller
     {
 
         $idSolExterna = $solicitud->POPRequisitionNumber;
-        $items = $solicitud->detalle->where('POPRequisitionNumber', $idSolExterna)->get();
+        $items = SolicitudPop::where('POPRequisitionNumber', $idSolExterna)->get();
 
         $DBObj = DB::connection('budnik');
-        $DBObj->raw('BEGIN TRANSACTION');
+        $DBObj->raw('BEGIN TRANSACTION ');
         try {
             foreach ($items as $item) {
                 // Aquí puedes agregar la lógica para revisar cada ítem de la solicitud
