@@ -40,8 +40,11 @@ class OrdenCompraController extends Controller
             foreach ($items as $item) {
                 // Aquí puedes agregar la lógica para revisar cada ítem de la solicitud
                 // Por ejemplo, verificar si el ítem está disponible, etc.
+                $ITMNMBR = $item->ITEMNMBR;
+                $VENDORID = $item->VENDORID;
+
                 $DBObj->raw("
-                DECLARE @ITEMNMBR VARCHAR(30) = '?', @VENDORID VARCHAR(15) = '?'
+                DECLARE @ITEMNMBR VARCHAR(30) = '$ITMNMBR', @VENDORID VARCHAR(15) = '$VENDORID'
                 SELECT COUNT(1) FROM IV00103 IV WHERE IV.ITEMNMBR = @ITEMNMBR AND IV.VENDORID = @VENDORID
                 IF (SELECT COUNT(1) FROM IV00103 IV WHERE IV.ITEMNMBR = @ITEMNMBR AND IV.VENDORID = @VENDORID) = 0
 
@@ -60,7 +63,7 @@ class OrdenCompraController extends Controller
                 SELECT 1 as CodError, 'Id Articulo o Id Proveedor No Existe' as ErrorDesc
                 ELSE
                 SELECT 0 as CodError, 'Relacion Satisfactoria' as ErrorDesc
-                ", $item->only(['ITEMNMBR', 'VENDORID']));
+                ");
             }
             $DBObj->raw('COMMIT');
         } catch (\Exception $e) {
