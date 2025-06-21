@@ -35,7 +35,7 @@ class OrdenCompraController extends Controller
         $items = SolicitudPop::where('POPRequisitionNumber', $idSolExterna)->get();
 
         $DBObj = DB::connection('budnik');
-        $DBObj->raw('BEGIN TRANSACTION ');
+        $DBObj->beginTransaction();
         try {
             foreach ($items as $item) {
                 // Aquí puedes agregar la lógica para revisar cada ítem de la solicitud
@@ -65,9 +65,9 @@ class OrdenCompraController extends Controller
                 SELECT 0 as CodError, 'Relacion Satisfactoria' as ErrorDesc
                 ");
             }
-            $DBObj->raw('COMMIT');
+            $DBObj->commit();
         } catch (\Exception $e) {
-            $DBObj->raw('ROLLBACK');
+            $DBObj->rollBack();
             throw $e; // O maneja el error de otra manera
         }
 

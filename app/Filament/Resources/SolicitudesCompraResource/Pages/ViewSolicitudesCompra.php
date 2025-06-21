@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\SolicitudesCompraResource\Pages;
 
 use App\Filament\Resources\SolicitudesCompraResource;
+use App\Http\Controllers\OrdenCompraController;
 use App\Models\aprobaciones_solicitud;
 use App\Models\aprobadores_solicitud;
+use App\Models\solicitudes_compra;
 use Filament\Actions;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Section;
@@ -40,7 +42,9 @@ class ViewSolicitudesCompra extends ViewRecord
                         if(aprobaciones_solicitud::where('IDExterno', $record['POPRequisitionNumber'])
                             ->where('Estado', 0)->count() == 0) {
                             //TODO: codigo de actualizacion de solicitud, y creacion de orden de compra
-                            //
+                            $ordenController = new OrdenCompraController();
+                            $ordenController->aprobarSolicitud($record['POPRequisitionNumber']);
+
                         }
 
                         $livewire->dispatch('refreshRelation');
