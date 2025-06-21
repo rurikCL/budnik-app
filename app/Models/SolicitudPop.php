@@ -86,4 +86,5 @@ class SolicitudPop extends Model
         'DEX_ROW_ID',
     ];
 
+
 }
