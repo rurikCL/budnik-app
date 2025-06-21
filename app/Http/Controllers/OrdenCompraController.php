@@ -10,9 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class OrdenCompraController extends Controller
 {
-    public function aprobarSolicitud(SolicitudPop $solicitudPop)
+    public function aprobarSolicitud($solicitudID)
     {
         //TODO: Implementar la lógica para aprobar una solicitud de compra
+        $solicitudPop = SolicitudPopHeader::where('POPRequisitionNumber', $solicitudID)->first();
         $this->revisaItemsSolicitud($solicitudPop);
     }
 
