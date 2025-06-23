@@ -67,11 +67,14 @@ class OrdenCompraController extends Controller
 
                 }
 
+                // taCreateItemVendors
                 $itemVendor = $DBObj->select("execute PortalItemVendor '$ITMNMBR', '$VENDORID' ,'$VENDORID'");
 
 
                 $fecha = Carbon::now()->format('Y-m-d');
-                $PONUMBER = $item->POPRequisitionNumber;
+                $PONUMBER = $DBObj->select('select dbo.POPRequisitionNumber from Pop40100')[0]->POPRequisitionNumber;
+                dump($PONUMBER);
+
                 $LOCNCODE =  $item->LOCNCODE;
                 $QUANTITY = $item->QTYORDER;
                 $QTYCANCELED = 0;//$item->QTYCANCELED;
