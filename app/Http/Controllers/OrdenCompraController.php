@@ -46,6 +46,7 @@ class OrdenCompraController extends Controller
                 // Por ejemplo, verificar si el ítem está disponible, etc.
                 $ITMNMBR = $item->ITEMNMBR;
                 $VENDORID = $item->VENDORID;
+                $LINENMBR = $item->LineNumber;
 
                 $itemTax = Item_tax::where('ITEMNMBR', $ITMNMBR)
                     ->where('VENDORID', $VENDORID)
@@ -66,41 +67,7 @@ class OrdenCompraController extends Controller
 
                 }
 
-
-                $itemVendor = $DBObj->statement("
-                declare @O_iErrorState int, @oErrString varchar(30)
-EXECUTE [dbo].taCreateItemVendors
-'$ITMNMBR',
-'$VENDORID',
-1,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default,
-default
-  ,@O_iErrorState OUTPUT
-  ,@oErrString OUTPUT
-
-  SELECT @O_iErrorState = ERRORDESC FROM DYNAMICS..taErrorCode WHERE ERRORCODE = @oErrString
-  SELECT @oErrString AS CodError, @O_iErrorState AS ErrorDesc
-GO");
-                dump($itemVendor);
+                $itemVendor = $DBObj->select("execute PortalItemVendor '$ITMNMBR', '$VENDORID' ,'$VENDORID'");
 
 
                 $fecha = Carbon::now()->format('Y-m-d');
@@ -115,11 +82,90 @@ GO");
                 $cod = '';
                 $msg = '';
 
-                $linea = $DBObj->select("EXEC taPoLine 1, ?, ?, ?, ?, default, ?, ?, '?', default, default, default, ?, default, default, default,
-default, default, default, default, default, default, default, default, ?, default, ?, default, default, default, default, default, default, default, default,
-default, default, default, default, ?, default, default, '', '', '', '', '', '', '', '', '', '', '', '', '', '', default, default, default, default, default, default,
-default, default, default, default, default, default, default, ? output, ? output",
-                    array($PONUMBER,$fecha,$VENDORID,$LOCNCODE,$ITMNMBR,$QUANTITY, $QTYCANCELED, $COMMENT,$UNITCOST,$UOFM,$ORD,$cod,$msg));
+                $linea = $DBObj->select(
+                    "
+                    declare @O_iErrorState int, @oErrString varchar(30)
+
+EXECUTE [dbo].[taPoLine]
+   1
+  ,'$PONUMBER'
+  ,'$fecha'
+  ,'$VENDORID'
+  ,'$LOCNCODE'
+  ,$LINENMBR
+  ,'$ITMNMBR '
+  ,$QUANTITY
+  ,$QTYCANCELED
+  ,default
+  ,'sa'
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,'2024-11-14 00:00:00.000'
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,'Pruba OC'
+  ,$UNITCOST
+  ,default
+  ,'$UOFM'
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+
+  ,1
+  ,default
+  ,''
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,default
+  ,@O_iErrorState OUTPUT
+  ,@oErrString OUTPUT
+
+
+
+  SELECT @O_iErrorState = ERRORDESC FROM DYNAMICS..taErrorCode WHERE ERRORCODE = @oErrString
+SELECT @oErrString AS CodError, @O_iErrorState AS ErrorDesc
+"
+                );
                 dump($linea);
 
 
