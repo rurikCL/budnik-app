@@ -51,7 +51,7 @@ class OrdenCompraController extends Controller
                 $itemTax = Item_tax::where('ITEMNMBR', $ITMNMBR)
                     ->where('VENDORID', $VENDORID)
                     ->count();
-                Log::info($ITMNMBR ." tiene tax : " . $itemTax);
+                Log::info($ITMNMBR . " tiene tax : " . $itemTax);
 
                 if ($itemTax == 0) {
                     $DBObj->statement("
@@ -73,9 +73,41 @@ class OrdenCompraController extends Controller
 
                 $fecha = Carbon::now()->format('Y-m-d');
                 $PONUMBER = $DBObj->select('select dbo.POPRequisitionNumber from Pop40100')[0]->POPRequisitionNumber;
-                dump($PONUMBER);
+//                dump($PONUMBER);
 
-                $LOCNCODE =  $item->LOCNCODE;
+
+                $correlativo = $DBObj->select("
+                DECLARE @corrActual varchar(21)
+                SET @corrActual = '$PONUMBER'
+
+                DECLARE @Prefijo VARCHAR(22), @NumCorrelStr VARCHAR(22), @Caracter VARCHAR(22)
+                DECLARE @NumCorrel INT, @Pos INT, @Largo INT, @LARGO2 INT
+
+                SET @NumCorrelStr =''
+                SET @Pos = len(@corrActual)
+                SET @Largo = len(@corrActual)
+                SET @Caracter = substring(@corrActual, @Largo, 1)
+                WHILE (@Pos >= 1) and (ascii(@Caracter) > 48 AND ascii(@Caracter) < 58) and @Caracter <> '-'
+                BEGIN
+                SET @NumCorrelStr = @Caracter + @NumCorrelStr
+                SET @Pos = @Pos - 1
+                SET @Caracter = substring(@corrActual, @Pos, 1)
+                END
+
+                SET @LARGO2 = @LARGO
+
+                SET @NumCorrel = CAST(@NumCorrelStr + 1 AS INT)
+                SET @NumCorrelStr = CAST(@NumCorrel AS VARCHAR(6))
+                SET @NumCorrel = CAST(@NumCorrelStr AS INT)
+                SET @Largo = LEN(@NumCorrelStr)
+
+                SET @Prefijo = substring(@corrActual, 1, @Pos - (@POS + @LARGO - @LARGO2))
+                SELECT @Prefijo + @NumCorrelStr
+");
+                dump($correlativo);
+
+
+                $LOCNCODE = $item->LOCNCODE;
                 $QUANTITY = $item->QTYORDER;
                 $QTYCANCELED = 0;//$item->QTYCANCELED;
                 $COMMENT = $item->Comment_Note_Index;
