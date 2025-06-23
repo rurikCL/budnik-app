@@ -72,7 +72,7 @@ class OrdenCompraController extends Controller
 
 
                 $fecha = Carbon::now()->format('Y-m-d');
-                $PONUMBER = $DBObj->select('select dbo.POPRequisitionNumber from Pop40100')[0]->POPRequisitionNumber;
+                $PONUMBER = $DBObj->select('select POPRequisitionNumber from dbo.Pop40100')[0]->POPRequisitionNumber;
 //                dump($PONUMBER);
 
 
