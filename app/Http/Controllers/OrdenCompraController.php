@@ -67,6 +67,40 @@ class OrdenCompraController extends Controller
                 }
 
 
+                $itemVendor = $DBObj->statement("
+                declare @O_iErrorState int, @oErrString varchar(30)
+EXECUTE [dbo].taCreateItemVendors
+'$ITMNMBR',
+'$VENDORID',
+1,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default,
+default
+  ,@O_iErrorState OUTPUT
+  ,@oErrString OUTPUT
+
+  SELECT @O_iErrorState = ERRORDESC FROM DYNAMICS..taErrorCode WHERE ERRORCODE = @oErrString
+  SELECT @oErrString AS CodError, @O_iErrorState AS ErrorDesc
+GO");
+                dump($itemVendor);
 
 
                 $fecha = Carbon::now()->format('Y-m-d');
