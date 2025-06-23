@@ -72,7 +72,7 @@ class OrdenCompraController extends Controller
 
 
                 $fecha = Carbon::now()->format('Y-m-d');
-                $PONUMBER = $DBObj->select('select POPRequisitionNumber from dbo.Pop40100')[0]->POPRequisitionNumber;
+                $PONUMBER = trim($DBObj->select('select POPRequisitionNumber from dbo.Pop40100')[0]->POPRequisitionNumber);
 //                dump($PONUMBER);
 
 
@@ -102,10 +102,9 @@ class OrdenCompraController extends Controller
                 SET @Largo = LEN(@NumCorrelStr)
 
                 SET @Prefijo = substring(@corrActual, 1, @Pos - (@POS + @LARGO - @LARGO2))
-                SELECT @Prefijo + @NumCorrelStr
+                SELECT @Prefijo + @NumCorrelStr as correlativo
 ");
-                dump($correlativo);
-
+                $PONUMBER = $correlativo[0]->correlativo;
 
                 $LOCNCODE = $item->LOCNCODE;
                 $QUANTITY = $item->QTYORDER;
@@ -182,8 +181,7 @@ EXECUTE [dbo].[taPoLine]
   ,default
   ,default
   ,default
-
-  ,1
+  ,$ORD
   ,default
   ,''
   ,default
@@ -195,9 +193,7 @@ EXECUTE [dbo].[taPoLine]
   ,@O_iErrorState OUTPUT
   ,@oErrString OUTPUT
 
-
-
-  SELECT @O_iErrorState = ERRORDESC FROM DYNAMICS..taErrorCode WHERE ERRORCODE = @oErrString
+ SELECT @O_iErrorState = ERRORDESC FROM DYNAMICS..taErrorCode WHERE ERRORCODE = @oErrString
 SELECT @oErrString AS CodError, @O_iErrorState AS ErrorDesc
 "
                 );
